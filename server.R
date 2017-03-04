@@ -40,9 +40,10 @@ server <- function(input, output) {
   
   
   output$visual.2d <- renderUI({
-    dataset <- data_Handler()
-    list(selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T,selected = 2),
-    selectInput('date',"Date",c(dmy(unique(dataset$betriebsdatum)))))
+    # dataset <- data_Handler()
+    list(selectInput('lines',"Line Number",linesChoice,multiple = T,selected = 2),
+    # selectInput('date',"Date",c(ymd(unique(dataset$betriebsdatum)))))
+    dateInput('date', 'Date', value = ymd('2015-11-04')))
   })
   
   
@@ -53,7 +54,8 @@ server <- function(input, output) {
   })
   
   output$maps <- renderPlot({
+    this.date <- input$date
     req(input$lines)
-    show_lines_mem(lines = input$lines)
+    show_lines(lines = input$lines, this.day = input$date)
   })
 }

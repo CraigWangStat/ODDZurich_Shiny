@@ -19,7 +19,6 @@ loadAllShp <- function(data_path,shpfiles){
 loadAllShp_MEM <- memoise(loadAllShp)
 
 show_lines <- function(lines, this.day = ymd('2015-10-04')){
-  
   shpfiles <- data_frame(
     Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',
     Fahrverbotszone = 'shapefiles/fahrverbotszone/Fahrverbotszone.shp',
@@ -40,17 +39,8 @@ show_lines <- function(lines, this.day = ymd('2015-10-04')){
   ind <- shp_lines@data$LineEFA %in% line_sel
   shp_lines_sub <- shp_lines[ind,]
   
-  # Which stops belong to the selected lines ? 
-  # con_delay <- mongo(collection = 'fahrzeitensollist', db = 'VBZ')
-  # qry <- list(linie = lines,
-  #             betriebsdatum = this.day) %>% 
-  #   toJSON(auto_unbox=T, POSIXt = "mongo")
-  # res <- con_delay$find(query = qry)
-  # stat_diva_ids <- res$halt_diva_von %>% unique()
-  # shp_stops_sub <- shp_stops[shp_stops$StopID %in% stat_diva_ids, ]
-  
   # Query total delays :
-  dly <- query_delays(lines,this.day) 
+  dly <- query_delays(as.integer(lines), this.day) 
   stat_diva_ids <- dly$halt_diva_von %>% unique()
   shp_stops_sub <- shp_stops[shp_stops$StopID %in% stat_diva_ids, ]
   shp_stops_sub <- sp::merge(shp_stops_sub, dly, by.x = 'StopID', by.y = 'halt_diva_von')
