@@ -7,12 +7,12 @@ Final <- function(Data, Line, day){
   DF$arrival_delay <- (DF$soll_an_von - DF$ist_an_von)
   DF$Time <- floor(DF$soll_an_von/3600)
   DF$Day <- weekdays(DF$date_from)
-  Summary <- aggregate(arrival_delay ~ Time + Day, data = DF, mean)
+  Summary <- aggregate(arrival_delay ~ Time + Day + date_from, data = DF, mean)
   Summary$State <- ifelse(Summary$arrival_delay <= 0, "Late", "Early")
   Summary$colour <- ifelse(Summary$arrival_delay <= 0, "firebrick1", "steelblue")
   ggplot(Summary[Summary$Day == day,], aes(Time, arrival_delay, label = "")) +
     geom_text(aes(y = 0)) +
     geom_bar(stat = "identity", position = "identity", aes(fill = State)) +
-    labs(x = "Time of the day", y = "Arrival to stop(sec)", title = paste0(day)) +
+    labs(x = "Time of the day", y = "Arrival to stop(sec)", title = paste0(day, ", ", Summary$date_from[1])) +
     scale_fill_manual(values=c("steelblue","firebrick1"))
 }
