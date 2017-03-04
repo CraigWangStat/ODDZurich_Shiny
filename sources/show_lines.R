@@ -19,10 +19,6 @@ loadAllShp <- function(data_path,shpfiles){
 loadAllShp_MEM <- memoise(loadAllShp)
 
 show_lines <- function(lines){
-  user <- 'craig'
-  data_path <- switch(user,
-                      'david' = '/home/dmasson/data/OpenDataDayZurich2016/',
-                      'craig' = 'sources/data/')
   
   shpfiles <- data_frame(
     Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',

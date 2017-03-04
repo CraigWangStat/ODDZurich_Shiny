@@ -49,6 +49,7 @@ server <- function(input, output) {
   })
   
   output$maps <- renderPlot({
+    req(input$lines)
     show_lines_mem(lines = input$lines)
   })
 }

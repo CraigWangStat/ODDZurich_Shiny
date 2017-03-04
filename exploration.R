@@ -24,17 +24,28 @@ ggmap(zurich_map)
 shpfiles <- data_frame(
   Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',
   Fahrverbotszone = 'shapefiles/fahrverbotszone/Fahrverbotszone.shp',
-  Stadtkreis = 'shapefiles/stadtkreis/Stadtkreis.shp'
+  Stadtkreis = 'shapefiles/stadtkreis/Stadtkreis.shp',
+  VBZ = 'shapefiles/vbz/ptways_j17.ptw.shp'
   )
 shp <- shapefile(paste0(data_path, 
                         # shpfiles$Fussgaengerzone
-                        shpfiles$Stadtkreis
+                        # shpfiles$Stadtkreis
+                        shpfiles$VBZ
                         ))
+
+
+crs(shp) <- CRS("+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs")
+
+
 str(shp@data, max.level = 2)
 tm_shape(shp = shp, is.master = T) + tm_polygons(
   # col = 'ZONENNAME'
-  col = 'KNAME'
+  # col = 'KNAME'
+  col = 'LineEFA'
   )
+
+# Plot lines
+tm_shape(shp = shp, is.master = T) + tm_lines(col = 'LineEFA')
 
 # VBZ data
 f1 <- paste0(data_path,'data/delay_data/fahrzeitensollist2015092020150926.csv')
@@ -62,5 +73,19 @@ crs(b) <- crs(rtopo)
 rtzh <- rtopo %>% crop(b)
 plot(rtzh)
 
-# Weather data
+# Station data
+con.stations <- mongo(collection = 'stations', db = 'VBZ')
+qry <- list(year = 2017) %>% toJSON(auto_unbox=T)
+fo <- con.stations$find(query = qry, limit = 4)
+
+
+
+
+
+
+
+
+
+
+
 
