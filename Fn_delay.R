@@ -14,6 +14,7 @@ Final <- function(Data, Line, day){
     geom_text(aes(y = 0)) +
     geom_bar(stat = "identity", position = "identity", aes(fill = State)) +
     labs(x = "Time of the day", y = "Arrival to stop(sec)",
-         title = paste0(day, ", ", Summary[Summary$Day == day,"date_from"][1])) +
+         title = paste0(day, ", ", Summary[Summary$Day == day,"date_from"][1],
+                        ", line ", Line)) +
     scale_fill_manual(values=c("steelblue","firebrick1"))
 }
