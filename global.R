@@ -1,5 +1,5 @@
 # global
-user <- 'david'
+user <- 'craig'
 data_path <- switch(user,
                     'david' = '/home/dmasson/data/OpenDataDayZurich2016/',
                     'craig' = 'sources/data/')

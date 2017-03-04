@@ -8,8 +8,9 @@ library(lubridate)
 library(jsonlite)
 library(memoise)
 
+source(file = 'global.R', local = TRUE)
 source(file = 'sources/show_lines.R', local = TRUE)
-
+source(file = 'Fn_delay.R', local = TRUE)
 ### --- Language setting -------------------------------------------------------- ###
 Sys.setenv(LANGUAGE = "de_CH")
 Sys.setenv(LANG = "de_CH.utf8")
@@ -33,19 +34,22 @@ server <- function(input, output) {
 
   output$visual.1d <- renderUI({
     dataset <- data_Handler()
-    selectInput('line',"Line Number",c(unique(dataset$linie)))
+    list(selectInput('line',"Line Number",selected=2,c(unique(dataset$linie))),
+    selectInput('day',"Day",c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")))
   })
   
   
   output$visual.2d <- renderUI({
     dataset <- data_Handler()
-    selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T)
- #   actionButton('plot',"Plot")
+    list(selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T,selected = 2),
+    selectInput('date',"Date",c(dmy(unique(dataset$betriebsdatum)))))
   })
   
+  
+              
   output$line.plot <- renderPlot({
     dataset <- data_Handler()
-    hist(dataset[dataset$linie==input$line,"soll_an_von"])
+    Final(Data=dataset,Line=input$line,input$day)
   })
   
   output$maps <- renderPlot({
