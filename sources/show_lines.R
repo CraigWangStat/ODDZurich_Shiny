@@ -1,6 +1,6 @@
 # Show VBZ lines
 
-loadAllShp <- function(){
+loadAllShp <- function(data_path,shpfiles){
   shp_kreis <- shapefile(paste0(data_path,shpfiles$Stadtkreis) )
   crs00 <-  CRS('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs ')
   shp_lines <- shapefile(paste0(data_path,shpfiles$VBZ_ptways) )
@@ -22,7 +22,7 @@ show_lines <- function(lines){
   user <- 'craig'
   data_path <- switch(user,
                       'david' = '/home/dmasson/data/OpenDataDayZurich2016/',
-                      'craig' = '/sources/data/')
+                      'craig' = 'sources/data/')
   
   shpfiles <- data_frame(
     Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',
@@ -33,11 +33,11 @@ show_lines <- function(lines){
     VBZ_points = 'shapefiles/vbz/stoppingpoints.stp.shp'
   )
 
-  res <- loadAllShp_MEM()
+  res <- loadAllShp_MEM(data_path,shpfiles)
   shp_kreis <-  res$shp_kreis
   shp_lines <-  res$shp_lines
   shp_stops <-  res$shp_stops
-  shp_points <- resshp_points
+  shp_points <- res$shp_points
   
   # Subset the file :
   line_sel <- lines %>% as.character()
@@ -52,7 +52,7 @@ show_lines <- function(lines){
 }
 show_lines_mem <<- memoise(show_lines)
 
-show_lines_mem(lines = c(7,9))
+show_lines_mem(lines = c(7,9,10))
 
 
 
