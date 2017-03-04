@@ -7,7 +7,6 @@ library(mongolite)
 library(lubridate)
 library(jsonlite)
 library(memoise)
-
 source(file = 'global.R', local = TRUE)
 source(file = 'sources/show_lines.R', local = TRUE)
 source(file = 'Fn_delay.R', local = TRUE)
@@ -18,7 +17,6 @@ Sys.setenv(LANG = "de_CH.utf8")
 ### --- load packages ----------------------------------------------------------- ###
 require(DT, quietly = TRUE) # install.packages('DT', repos = 'http://cran.rstudio.com')
 require(datasets, quietly = TRUE)
-require(epitools, quietly = TRUE)
 require(lattice, quietly = TRUE)
 
 
@@ -41,14 +39,14 @@ server <- function(input, output) {
   
   output$visual.2d <- renderUI({
     dataset <- data_Handler()
-    list(selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T,selected = 2),
-    selectInput('date',"Date",c(dmy(unique(dataset$betriebsdatum)))))
+    selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T,selected = 2)
   })
   
   
               
   output$line.plot <- renderPlot({
     dataset <- data_Handler()
+    req(input$lines)
     Final(Data=dataset,Line=input$line,input$day)
   })
   
