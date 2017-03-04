@@ -1,4 +1,15 @@
 library(shiny)
+library(raster)
+library(tidyverse)
+library(tmap)
+library(ggmap)
+library(mongolite)
+library(lubridate)
+library(jsonlite)
+library(memoise)
+
+source(file = 'sources/show_lines.R', local = TRUE)
+
 ### --- Language setting -------------------------------------------------------- ###
 Sys.setenv(LANGUAGE = "de_CH")
 Sys.setenv(LANG = "de_CH.utf8")
@@ -20,13 +31,24 @@ server <- function(input, output) {
 
 # --------------------------------------------------------------------------------- #
 
-  output$visual <- renderUI({
+  output$visual.1d <- renderUI({
     dataset <- data_Handler()
     selectInput('line',"Line Number",c(unique(dataset$linie)))
   })
   
-  output$lines <- renderPlot({
+  
+  output$visual.2d <- renderUI({
+    dataset <- data_Handler()
+    selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T)
+ #   actionButton('plot',"Plot")
+  })
+  
+  output$line.plot <- renderPlot({
     dataset <- data_Handler()
     hist(dataset[dataset$linie==input$line,"soll_an_von"])
+  })
+  
+  output$maps <- renderPlot({
+    show_lines_mem(lines = input$lines)
   })
 }

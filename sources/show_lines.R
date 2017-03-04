@@ -1,17 +1,11 @@
 # Show VBZ lines
-library(raster)
-library(tidyverse)
-library(tmap)
-library(ggmap)
-library(mongolite)
-library(lubridate)
-library(jsonlite)
-library(memoise)
+
 
 show_lines <- function(lines){
-  user <- 'david'
+  user <- 'craig'
   data_path <- switch(user,
-                      'david' = '/home/dmasson/data/OpenDataDayZurich2016/')
+                      'david' = '/home/dmasson/data/OpenDataDayZurich2016/',
+                      'craig' = '/sources/data/')
   
   shpfiles <- data_frame(
     Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',
@@ -21,13 +15,13 @@ show_lines <- function(lines){
     VBZ_stops = 'shapefiles/vbz/stopareas.stp.shp',
     VBZ_points = 'shapefiles/vbz/stoppingpoints.stp.shp'
   )
-  shp_kreis <- shapefile(paste0(data_path, shpfiles$Stadtkreis) )
+  shp_kreis <- shapefile(paste0(data_path,shpfiles$Stadtkreis) )
   crs00 <-  CRS('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs ')
-  shp_lines <- shapefile(paste0(data_path, shpfiles$VBZ_ptways) )
+  shp_lines <- shapefile(paste0(data_path,shpfiles$VBZ_ptways) )
   crs(shp_lines) <- crs00
-  shp_stops <- shapefile(paste0(data_path, shpfiles$VBZ_stops))
+  shp_stops <- shapefile(paste0(data_path,shpfiles$VBZ_stops))
   crs(shp_stops) <- crs00
-  shp_points <-  shapefile(paste0(data_path, shpfiles$VBZ_points) )
+  shp_points <-  shapefile(paste0(data_path,shpfiles$VBZ_points) )
   crs(shp_points) <- crs00
   
   # str(shp_points@data, max.level = 2)
@@ -45,7 +39,7 @@ show_lines <- function(lines){
     tm_lines(col = 'LineEFA', lwd = 5)
     # tm_shape(shp = shp_stops, is.master = T) + tm_dots () 
 }
-show_lines_mem <- memoise(show_lines)
+show_lines_mem <<- memoise(show_lines)
 
 show_lines_mem(lines = c(7,9))
 
