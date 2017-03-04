@@ -3,9 +3,10 @@ tabItem(tabName = 'dataselection', fluidPage(# theme = "shiny-gymi.css",
     tags$style(HTML(".shiny-output-error-validation {color: green;}"))
   ),
   sidebarPanel(
-    selectInput('input_type', "Data Selection",
-                c("Choice 1", "Choice 2", "Choice 3"), 
-                selected = "Choice 1")),
+    selectInput('inputdata', "Data Selection",
+                c("Example 1", "Example 2"), 
+                selected = "Example 1")),
   
-  mainPanel()
+  mainPanel(h3("example"),
+            tableOutput('dataset'))
 ))

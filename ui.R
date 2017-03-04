@@ -2,40 +2,59 @@ library(shiny)
 ### ---load packages--- #############################################################
 require(shinydashboard, quietly = TRUE)
 
+
 #### --- SHINY UI -------------------------------------------------------------- ####
 ui <- dashboardPage(
-  dashboardHeader(title = "ODD App"),
-  ### ---dashboardSidebar--- ##########################################################
+  dashboardHeader(title = "ODD Zurich App"),
+### ---dashboardSidebar--- ##########################################################
   dashboardSidebar(
-    
+#      width=200,
     sidebarMenu(
-      menuItem("Data Selection", tabName = 'dataselection', icon = icon("database")), 
-      
-      menuItem("Visualizing Data",
-               tabName = 'visualizingdata',
-               menuSubItem("Map",
-                           tabName = 'map', icon = icon("bar-chart"))),
-      menuItem("Analyzing Data", tabName = 'analyzingdata', icon = icon("bar-chart")
-             ),
-      
-      menuItem("About", tabName = 'about')
+      menuItem("Daten Wahl", tabName = 'dataselection', icon = icon("database")), 
+
+      menuItem("Deskriptive Statistik",
+                          tabName = 'deskriptive Statistik',
+              menuSubItem("1D Visualization",
+                          tabName = '1d', icon = icon("bar-chart"))),
+      menuItem("Impressum", tabName = 'about')
     )
   ),
-  ### ---dashboardBody--- #############################################################
+### ---dashboardBody--- #############################################################
   dashboardBody(
+   #   includeCSS("www/shiny-gymi.css"),
     tabItems(
-      
-      # --- dataselection --------------------------------------------------------------- #
-      source("./sources/selection.R", local = TRUE)$value,
-      
-      # --- Visualization --------------------------------------------------------------- #
-      source("./sources/visualization.R", local = TRUE)$value,
-      
-      # --- Analyzing ------------------------------------------------------------------- #
-      source("./sources/analyzing.R", local = TRUE)$value,
-      
-      # --- About ----------------------------------------------------------------------- #
-      source("./sources/about.R", local = TRUE)$value
 
+# --- dataselection --------------------------------------------------------------- #
+      tabItem(tabName = 'dataselection', fluidPage(# theme = "shiny-gymi.css",
+        tags$head(
+          tags$style(HTML(".shiny-output-error-validation {color: green;}"))
+        ),
+        sidebarPanel(
+          selectInput('input_type', "Datenquelle auswählen",
+                      c("R Datensatz"), 
+                      selected = "R Datensatz"),
+          uiOutput('ui.dataselection')),
+        
+        mainPanel(
+          h2("Datensatz"),
+          tags$br(),
+          uiOutput('dataset'))
+      )),
+
+# --- 1D Visualization ------------------------------------------------------------ #
+      tabItem(tabName = '1d',
+              sidebarPanel(
+                uiOutput('visual')
+              ),
+
+              mainPanel(h3("Barplot of Average Delay Times"),
+                        plotOutput('lines')
+                        )
+      ),
+
+# --- About ----------------------------------------------------------------------- #
+      tabItem(tabName = 'about', fluidPage(
+        h3("Impressum")
+      ))
     )
   ))
