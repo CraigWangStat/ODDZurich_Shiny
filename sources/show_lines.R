@@ -1,5 +1,22 @@
 # Show VBZ lines
 
+loadAllShp <- function(){
+  shp_kreis <- shapefile(paste0(data_path,shpfiles$Stadtkreis) )
+  crs00 <-  CRS('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs ')
+  shp_lines <- shapefile(paste0(data_path,shpfiles$VBZ_ptways) )
+  crs(shp_lines) <- crs00
+  shp_stops <- shapefile(paste0(data_path,shpfiles$VBZ_stops))
+  crs(shp_stops) <- crs00
+  shp_points <-  shapefile(paste0(data_path,shpfiles$VBZ_points) )
+  crs(shp_points) <- crs00
+  return(list(
+    shp_kreis = shp_kreis, 
+    shp_lines = shp_lines, 
+    shp_stops = shp_stops, 
+    shp_points = shp_points
+  ))
+}
+loadAllShp_MEM <- memoise(loadAllShp)
 
 show_lines <- function(lines){
   user <- 'craig'
@@ -15,23 +32,17 @@ show_lines <- function(lines){
     VBZ_stops = 'shapefiles/vbz/stopareas.stp.shp',
     VBZ_points = 'shapefiles/vbz/stoppingpoints.stp.shp'
   )
-  shp_kreis <- shapefile(paste0(data_path,shpfiles$Stadtkreis) )
-  crs00 <-  CRS('+proj=somerc +lat_0=46.95240555555556 +lon_0=7.439583333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs ')
-  shp_lines <- shapefile(paste0(data_path,shpfiles$VBZ_ptways) )
-  crs(shp_lines) <- crs00
-  shp_stops <- shapefile(paste0(data_path,shpfiles$VBZ_stops))
-  crs(shp_stops) <- crs00
-  shp_points <-  shapefile(paste0(data_path,shpfiles$VBZ_points) )
-  crs(shp_points) <- crs00
-  
-  # str(shp_points@data, max.level = 2)
+
+  res <- loadAllShp_MEM()
+  shp_kreis <-  res$shp_kreis
+  shp_lines <-  res$shp_lines
+  shp_stops <-  res$shp_stops
+  shp_points <- resshp_points
   
   # Subset the file :
-  # line_sel <- c(7, 9) %>% as.character()
   line_sel <- lines %>% as.character()
   ind <- shp_lines@data$LineEFA %in% line_sel
   shp_lines_sub <- shp_lines[ind,]
-  # str(shp_stops@data, max.level = 2)
   
   tm_shape(shp = shp_kreis, is.master = T) + 
     tm_polygons(col = 'KNAME', alpha = 0.3, legend.show = F) +
