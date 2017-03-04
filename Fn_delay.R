@@ -13,6 +13,7 @@ Final <- function(Data, Line, day){
   ggplot(Summary[Summary$Day == day,], aes(Time, arrival_delay, label = "")) +
     geom_text(aes(y = 0)) +
     geom_bar(stat = "identity", position = "identity", aes(fill = State)) +
-    labs(x = "Time of the day", y = "Arrival to stop(sec)", title = paste0(day, ", ", Summary$date_from[1])) +
+    labs(x = "Time of the day", y = "Arrival to stop(sec)",
+         title = paste0(day, ", ", Summary[Summary$Day == day,"date_from"][1])) +
     scale_fill_manual(values=c("steelblue","firebrick1"))
 }
