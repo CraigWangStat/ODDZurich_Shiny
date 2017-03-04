@@ -18,7 +18,7 @@ loadAllShp <- function(data_path,shpfiles){
 }
 loadAllShp_MEM <- memoise(loadAllShp)
 
-show_lines <- function(lines){
+show_lines <- function(lines, this.day = ymd('2015-10-04')){
   
   shpfiles <- data_frame(
     Fussgaengerzone = 'shapefiles/fussgaengerzone/Fussgaengerzone.shp',
@@ -35,20 +35,35 @@ show_lines <- function(lines){
   shp_stops <-  res$shp_stops
   shp_points <- res$shp_points
   
-  # Subset the file :
+  # Subset the shapefiles :
   line_sel <- lines %>% as.character()
   ind <- shp_lines@data$LineEFA %in% line_sel
   shp_lines_sub <- shp_lines[ind,]
   
+  # Which stops belong to the selected lines ? 
+  # con_delay <- mongo(collection = 'fahrzeitensollist', db = 'VBZ')
+  # qry <- list(linie = lines,
+  #             betriebsdatum = this.day) %>% 
+  #   toJSON(auto_unbox=T, POSIXt = "mongo")
+  # res <- con_delay$find(query = qry)
+  # stat_diva_ids <- res$halt_diva_von %>% unique()
+  # shp_stops_sub <- shp_stops[shp_stops$StopID %in% stat_diva_ids, ]
+  
+  # Query total delays :
+  dly <- query_delays(lines,this.day) 
+  stat_diva_ids <- dly$halt_diva_von %>% unique()
+  shp_stops_sub <- shp_stops[shp_stops$StopID %in% stat_diva_ids, ]
+  shp_stops_sub <- sp::merge(shp_stops_sub, dly, by.x = 'StopID', by.y = 'halt_diva_von')
+  
   tm_shape(shp = shp_kreis, is.master = T) + 
     tm_polygons(col = 'KNAME', alpha = 0.3, legend.show = F) +
     tm_shape(shp = shp_lines_sub, is.master = F) +
-    tm_lines(col = 'LineEFA', lwd = 5)
-    # tm_shape(shp = shp_stops, is.master = T) + tm_dots () 
+    tm_lines(col = 'LineEFA', lwd = 5) +
+    tm_shape(shp = shp_stops_sub, is.master = T) + 
+    tm_bubbles(col = 'tot_delay', alpha = 0.5, size = 0.3)
+    
 }
-show_lines_mem <<- memoise(show_lines)
-
-show_lines_mem(lines = c(7,9,10))
+show_lines(lines = c(10), this.day = ymd('2015-11-04'))
 
 
 

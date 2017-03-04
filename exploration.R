@@ -52,19 +52,6 @@ f1 <- paste0(data_path,'data/delay_data/fahrzeitensollist2015092020150926.csv')
 df1 <- read_csv(file = f1)
 times <- df1$betriebsdatum %>% unique()
 
-# Explore data inserted in MongoDB
-con <- mongo(collection = 'fahrzeitensollist', db = 'VBZ')
-
-con$count()
-infos <- con$info() %>% .$stats
-
-fo <- con$find(limit = 1)
-
-qry <- list(linie = 10,
-            betriebsdatum = '2015-10-04' %>% ymd()) %>% 
-  toJSON(auto_unbox=T, POSIXt = "mongo")
-res <- con$find(query = qry)
-
 # Topographic SRTM data
 fl <- paste0(data_path,'srtm_38_03/srtm_38_03.tif')
 rtopo <- raster(fl)
@@ -77,15 +64,44 @@ plot(rtzh)
 con.stations <- mongo(collection = 'stations', db = 'VBZ')
 qry <- list(year = 2017) %>% toJSON(auto_unbox=T)
 fo <- con.stations$find(query = qry, limit = 4)
+# Delay fata
+con_delay <- mongo(collection = 'fahrzeitensollist', db = 'VBZ')
+con_delay$count()
+infos <- con_delay$info() %>% .$stats
+fo <- con_delay$find(limit = 1)
+qry <- list(linie = 10,
+            betriebsdatum = '2015-10-04' %>% ymd()) %>% 
+  toJSON(auto_unbox=T, POSIXt = "mongo")
+res <- con_delay$find(query = qry)
+stat_diva_ids <- res$halt_diva_von %>% unique()
+
+stops <- shp_stops@data %>% filter(StopID %in% stat_diva_ids)
 
 
+shp_stops_sub <- shp_stops[shp_stops$StopID %in% stat_diva_ids, ]
+plot(shp_stops_sub)
 
 
+source('sources/show_lines.R')
+res <- loadAllShp_MEM(data_path,shpfiles)
+shp_kreis <-  res$shp_kreis
+shp_lines <-  res$shp_lines
+shp_stops <-  res$shp_stops
+shp_points <- res$shp_points
 
+View(shp_points@data)
+View(shp_lines@data)
 
+intersect(names(shp_points@data), names(shp_lines@data) )
 
+shp_lines@data$DrawClass %>% unique()
 
+intersect(names(shp_lines@data), names(res))
 
+names(shp_lines@data)
+names(shp_points@data)
+View(shp_stops@data)
 
+shp_stops@data$StopID %>% unique()
 
 
