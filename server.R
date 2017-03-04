@@ -34,17 +34,19 @@ server <- function(input, output) {
 
   output$visual.1d <- renderUI({
     dataset <- data_Handler()
-    list(selectInput('line',"Line Number",c(unique(dataset$linie))),
+    list(selectInput('line',"Line Number",selected=2,c(unique(dataset$linie))),
     selectInput('day',"Day",c("Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday")))
   })
   
   
   output$visual.2d <- renderUI({
     dataset <- data_Handler()
-    selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T)
-   
+    list(selectInput('lines',"Line Number",c(unique(dataset$linie)),multiple = T,selected = 2),
+    selectInput('date',"Date",c(dmy(unique(dataset$betriebsdatum)))))
   })
   
+  
+              
   output$line.plot <- renderPlot({
     dataset <- data_Handler()
     Final(Data=dataset,Line=input$line,input$day)
